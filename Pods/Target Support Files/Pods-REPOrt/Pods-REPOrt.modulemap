@@ -1,0 +1,6 @@
+framework module Pods_REPOrt {
+  umbrella header "Pods-REPOrt-umbrella.h"
+
+  export *
+  module * { export * }
+}
