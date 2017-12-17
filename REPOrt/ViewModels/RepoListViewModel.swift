@@ -59,7 +59,8 @@ class RepoListViewModel {
             let isVisible = (items == nil) || (items?.count == 0)
             self.emptyViewVisibilityUpdateSubject.onNext(isVisible)
             self.repoListUpdatedSignalSubject.onNext((items, hasMore))
-        }, onError: { (error) in
+        }, onError: { (_) in
+            self.activityIndicatorVisibilitySignalSubject.onNext(false)
         }, onCompleted: {
             self.activityIndicatorVisibilitySignalSubject.onNext(false)
         }).disposed(by: self.disposeBag)
@@ -69,7 +70,8 @@ class RepoListViewModel {
         self.activityIndicatorVisibilitySignalSubject.onNext(true)
         self.reportService.loadMore().debounce(2, scheduler: MainScheduler.instance).observeOn(MainScheduler.instance).subscribe(onNext: { [unowned self] (items, hasMore) in
             self.loadMoreResultSignalSubject.onNext((items, hasMore))
-        }, onError: { (error) in
+        }, onError: { (_) in
+            self.activityIndicatorVisibilitySignalSubject.onNext(false)
         }, onCompleted: {
             self.activityIndicatorVisibilitySignalSubject.onNext(false)
         }).disposed(by: self.disposeBag)
@@ -79,8 +81,7 @@ class RepoListViewModel {
         self.reportService.loadImageFromUrlString(urlString: urlString).observeOn(MainScheduler.instance).subscribe(onNext: { (image) in
             item.avatarImage = image
             item.avatarUrlString = nil
-        }, onError: { error in
-            
+        }, onError: { _ in
         }, onCompleted: {
         }) {
         }.disposed(by: self.disposeBag)
