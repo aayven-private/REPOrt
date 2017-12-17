@@ -2,6 +2,8 @@
 //  RepoListViewModel.swift
 //  REPOrt
 //
+//  ViewModel for the repo list view.
+//
 //  Created by Ivan Borsa on 15.12.17.
 //  Copyright © 2017 aayven. All rights reserved.
 //
@@ -12,14 +14,13 @@ import RxCocoa
 import UIKit
 
 class RepoListViewModel {
+    
+    // The public signals for changing the UI in the viewController
     var repoListUpdatedSignal: Driver<([RepoItem]?, Bool)> {
         return repoListUpdatedSignalSubject.asDriver(onErrorJustReturn: (nil, false))
     }
     var loadMoreResultSignal: Driver<([RepoItem]?, Bool)> {
         return loadMoreResultSignalSubject.asDriver(onErrorJustReturn: (nil, false))
-    }
-    var imageLoadedSignal: Driver<Void> {
-        return imageLoadedSignalSubject.asDriver(onErrorJustReturn: ())
     }
     var emptyViewVisibilityUpdate: Driver<Bool> {
         return emptyViewVisibilityUpdateSubject.asDriver(onErrorJustReturn: false)
@@ -31,9 +32,9 @@ class RepoListViewModel {
         return activityIndicatorVisibilitySignalSubject.asDriver(onErrorJustReturn: false)
     }
     
+    // Private subjects for triggering the public signals. This way the viewController is a pure observer.
     fileprivate let repoListUpdatedSignalSubject = PublishSubject<([RepoItem]?, Bool)>()
     fileprivate let loadMoreResultSignalSubject = PublishSubject<([RepoItem]?, Bool)>()
-    fileprivate let imageLoadedSignalSubject = PublishSubject<Void>()
     fileprivate let emptyViewVisibilityUpdateSubject = PublishSubject<Bool>()
     fileprivate let viewControllerPresentationSignalSubject = PublishSubject<UIViewController>()
     fileprivate let activityIndicatorVisibilitySignalSubject = PublishSubject<Bool>()

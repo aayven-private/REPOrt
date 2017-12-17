@@ -2,6 +2,8 @@
 //  API.swift
 //  REPOrt
 //
+//  Protocol for describing APIs.
+//
 //  Created by Ivan Borsa on 15.12.17.
 //  Copyright © 2017 aayven. All rights reserved.
 //

@@ -2,6 +2,9 @@
 //  REPOrtService.swift
 //  REPOrt
 //
+//  Service class handling the requests initiated by the user.
+//  The methods create observables that can be observed in the view models and act on changes accordingly.
+//
 //  Created by Ivan Borsa on 15.12.17.
 //  Copyright © 2017 aayven. All rights reserved.
 //
@@ -31,11 +34,13 @@ final class REPOrtService: REPOrtServiceProtocol {
         self.sampleDataDictionary = sampleDataDictionary
     }
     
+    // Resets pagination and search term. Used when search text changed.
     func reset() {
         self.pagination.pageNum = 1
         self.searchTerm = ""
     }
     
+    // Resturns an observable sequence producing the repo item list and a hasMore flag
     func getRepos(searchTerm: String) -> Observable<([RepoItem]?, Bool)> {
         self.pagination.pageNum = 1
         self.searchTerm = searchTerm
@@ -43,17 +48,20 @@ final class REPOrtService: REPOrtServiceProtocol {
         return networkClient.JSONrequest(endpoint: repoEndpoint).map(toRepoItems)
     }
     
+    // Resturns an observable sequence producing the upcoming page for the previously specified search term and a hasMore flag.
     func loadMore() -> Observable<([RepoItem]?, Bool)> {
         self.pagination.pageNum = pagination.pageNum + 1
         let repoEndpoint = REPOrtAPI.getRepos(searchTerm: self.searchTerm, pagination: self.pagination, sampleData: getSampleData(forEndpointName: "load_more"))
         return networkClient.JSONrequest(endpoint: repoEndpoint).map(toRepoItems)
     }
     
+    // Downloads an image from a given url. Used for asynchronously downloading the avatar images.
     func loadImageFromUrlString(urlString: String) -> Observable<UIImage> {
         let imageEndpoint = REPOrtAPI.getImage(urlString: urlString)
         return networkClient.DATArequest(endpoint: imageEndpoint).map(toAvatarImage)
     }
     
+    // Downloads the subscriber list from the given url.
     func getSubscribers(urlString: String) -> Observable<[String]> {
         let subscribersEndpoint = REPOrtAPI.getSubscribers(urlString: urlString, sampleData: getSampleData(forEndpointName: "get_subscribers"))
         return networkClient.JSONrequest(endpoint: subscribersEndpoint).map(toSubscribersList)

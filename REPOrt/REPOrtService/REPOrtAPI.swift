@@ -2,6 +2,8 @@
 //  REPOrtAPI.swift
 //  REPOrt
 //
+//  Enum describing the GitHub API (or a tiny subset of it that we are using)
+//
 //  Created by Ivan Borsa on 15.12.17.
 //  Copyright © 2017 aayven. All rights reserved.
 //

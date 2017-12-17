@@ -2,6 +2,8 @@
 //  NetworkClient.swift
 //  REPOrt
 //
+//  Simple network client using Alamofire and RxSwift. Handles JSON and Data responses.
+//
 //  Created by Ivan Borsa on 15.12.17.
 //  Copyright © 2017 aayven. All rights reserved.
 //
@@ -74,6 +76,7 @@ struct NetworkClient: NetworkClientProtocol {
 }
 
 extension NetworkClient {
+    // Helper function to load stubbed responses from the specified bundle. Used for testing the requests.
     static func stubbedResponse(_ filename: String, bundle: Bundle) -> AnyObject? {
         guard let path = bundle.path(forResource: filename, ofType: "json"), let validData = try? Data(contentsOf: URL(fileURLWithPath: path)) else {
             return nil
@@ -89,6 +92,7 @@ extension NetworkClient {
 }
 
 private extension NetworkClient {
+    // Helper function cleaning the urls.
     func getSafeFullUrl(endpoint: API) -> String {
         var formattedBaseUrl = endpoint.baseUrl
         var formattedPath = endpoint.path

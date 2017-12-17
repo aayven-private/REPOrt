@@ -2,6 +2,8 @@
 //  RepoDetailsViewModel.swift
 //  REPOrt
 //
+//  ViewModel for the repo details view.
+//
 //  Created by Ivan Borsa on 16.12.17.
 //  Copyright © 2017 aayven. All rights reserved.
 //

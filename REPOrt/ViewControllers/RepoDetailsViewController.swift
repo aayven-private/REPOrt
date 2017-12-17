@@ -69,6 +69,7 @@ class RepoDetailsViewController: UIViewController {
     }
     
     override func viewWillDisappear(_ animated: Bool) {
+        // Clean up the bindings
         super.viewWillDisappear(animated)
         self.viewModel.deactivate()
     }
@@ -83,13 +84,14 @@ extension RepoDetailsViewController: UITableViewDelegate, UITableViewDataSource 
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "SubscriberCell") else { return UITableViewCell() }
         let subscriberName = self.dataSource[indexPath.row]
         cell.textLabel?.text = subscriberName
-        cell.backgroundColor = (indexPath.row % 2 == 0) ? UIColor.white : UIColor.lightGray
+        cell.backgroundColor = (indexPath.row % 2 == 0) ? UIColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 1) : UIColor.white
         return cell
     }
 }
 
 private extension RepoDetailsViewController {
     func bindViewModel() {
+        // Only the subscribers are loaded asynchronously as all other information is in the repo item already.
         self.viewModel.subscriberListUpdatedSignal.asObservable().takeUntil(self.viewModel.deactivateSignal).asDriver(onErrorJustReturn: []).drive(onNext: { (subscribers) in
             self.subscribers.value = subscribers
         }, onCompleted: {

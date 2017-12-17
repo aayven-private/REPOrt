@@ -34,6 +34,7 @@ class RepoListViewController: UIViewController {
         self.repoTableView.dataSource = self
         self.repoTableView.separatorStyle = .none
         
+        // Observing the repo list, in case we have more results, add a load more cell at the bottom
         self.repoItems.asDriver().drive(onNext: { [unowned self] (items, hasMore) in
             self.dataSource = items
             if hasMore {
@@ -66,6 +67,7 @@ extension RepoListViewController: UITableViewDelegate, UITableViewDataSource {
         let cellItem = self.dataSource[indexPath.row]
         
         if let repoItem = cellItem as? RepoItem {
+            // Repo cell
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "RepoListCell", for: indexPath) as? RepoListCell else { return UITableViewCell() }
             cell.setupWithRepoItem(repoItem: repoItem)
             if let avatarUrlString = repoItem.avatarUrlString {
@@ -73,6 +75,7 @@ extension RepoListViewController: UITableViewDelegate, UITableViewDataSource {
             }
             return cell
         } else if let loadMoreString = cellItem as? String {
+            // Load more cell
             let cell = UITableViewCell()
             cell.textLabel?.text = loadMoreString
             cell.textLabel?.textAlignment = .center
@@ -99,6 +102,7 @@ extension RepoListViewController: UITableViewDelegate, UITableViewDataSource {
 
 private extension RepoListViewController {
     func bindViewModel() {
+        // Observing the search field text. Debounce to avoid continous seach while typing
         self.searchField.rx.text.asObservable().debounce(1, scheduler: MainScheduler.instance).distinctUntilChanged({ (n1, n2) -> Bool in
             n1 == n2
         }).subscribe(onNext: { [unowned self] (text) in
@@ -111,6 +115,7 @@ private extension RepoListViewController {
         }) {
         }.disposed(by: self.disposeBag)
         
+        // Repo list updated so act on it!
         self.viewModel.repoListUpdatedSignal.drive(onNext: { [unowned self] (items, hasMore) in
             guard let _items = items else { return }
             self.repoItems.value = (_items, hasMore)
@@ -118,6 +123,7 @@ private extension RepoListViewController {
         }) {
         }.disposed(by: self.disposeBag)
         
+        // New page loaded, we append the new results to the end.
         self.viewModel.loadMoreResultSignal.drive(onNext: { (items, hasMore) in
             guard let _items = items else { return }
             var currentItems = self.repoItems.value.0
@@ -127,26 +133,21 @@ private extension RepoListViewController {
         }) {
         }.disposed(by: self.disposeBag)
         
-        self.viewModel.imageLoadedSignal.throttle(2).drive(onNext: { [unowned self] in
-            self.reloadTable()
-        }, onCompleted: {
-        }) {
-        }.disposed(by: self.disposeBag)
-        
+        // Empty view visibility update
         self.viewModel.emptyViewVisibilityUpdate.drive(onNext: { [unowned self] (isVisible) in
             self.emptyView.isHidden = !isVisible
         }, onCompleted: {
         }) {
         }.disposed(by: self.disposeBag)
         
+        // View controller presentation handler. Details page openinng triggers it.
         self.viewModel.viewControllerPresentationSignal.drive(onNext: { [unowned self] viewController in
-            self.present(viewController, animated: true, completion: {
-                
-            })
+            self.present(viewController, animated: true, completion: nil)
         }, onCompleted: {
         }) {
         }.disposed(by: self.disposeBag)
         
+        // Activity indicator visibility update.
         self.viewModel.activityIndicatorVisibilitySignal.drive(onNext: { [unowned self] (isVisible) in
             if isVisible {
                 self.activityIndicator.startAnimating()
@@ -160,6 +161,7 @@ private extension RepoListViewController {
 }
 
 private extension RepoListViewController {
+    // Animate layout chenge on keyboard hide / show
     @objc func keyboardNotification(notification: NSNotification) {
         if let userInfo = notification.userInfo {
             let endFrame = (userInfo[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
@@ -197,6 +199,7 @@ private extension RepoListViewController {
 
 private extension RepoListViewController {
     func reloadTable(shouldKeepOffset: Bool = true) {
+        // Reloads the tableview content, keeps offset if necessary (on load more when we don't want to scroll to the top)
         let lastScrollOffset = self.repoTableView.contentOffset
         self.repoTableView.reloadData()
         self.repoTableView.layer.removeAllAnimations()

@@ -16,6 +16,7 @@ class RepoListCell: UITableViewCell {
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UILabel!
     @IBOutlet weak var forksLabel: UILabel!
+    @IBOutlet weak var separatorView: UIView!
     
     fileprivate let disposeBag = DisposeBag()
     
@@ -29,6 +30,7 @@ class RepoListCell: UITableViewCell {
         self.forksLabel.text = "Forks: \(repoItem.numForks)"
         self.descriptionLabel.text = repoItem.repoDescription
         
+        // Asynchronously load the avatar image.
         repoItem.imageChangedSignal.asObservable().takeUntil(repoItem.deinitSignal).asDriver(onErrorJustReturn: UIImage()).drive(onNext: { [unowned self] (image) in
             self.avatarImageView.image = image
         }, onCompleted: {

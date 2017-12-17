@@ -1,7 +1,5 @@
 ## REPOrt
 
-## Description
-
 Simple iOS app for browsing GitHub repostories.
 
 ## Installation
@@ -22,6 +20,11 @@ The project is based on the MVVM design pattern with functional reactive program
 ## Usage
 
 Just type in the search field:)
+
+## Testing
+
+The project includes 2 example unit test covering the getRepos and getSubscribers functions.
+These calls are tested with stubbed responses, stored in the test bundle as JSON files.
 
 ## Compatibility
 

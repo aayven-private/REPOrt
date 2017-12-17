@@ -2,6 +2,8 @@
 //  RepoItem.swift
 //  REPOrt
 //
+//  Repo item object describing the repository query results.
+//
 //  Created by Ivan Borsa on 15.12.17.
 //  Copyright © 2017 aayven. All rights reserved.
 //
@@ -31,6 +33,7 @@ enum JSONParsingError: Error {
 }
 
 class RepoItem {
+    // Notify subscribers on image change so they can act on it.
     var avatarImage: UIImage {
         didSet {
             self.imageChangedSignalSubject.onNext(self.avatarImage)
@@ -48,6 +51,7 @@ class RepoItem {
         return imageChangedSignalSubject.asDriver(onErrorJustReturn: UIImage(named: "default_avatar") ?? UIImage())
     }
     
+    // Deinit signal for the item so that subscribers can let bindings go.
     let deinitSignal = PublishSubject<Void>()
     fileprivate let imageChangedSignalSubject = PublishSubject<UIImage>()
     fileprivate let disposeBag = DisposeBag()
@@ -67,6 +71,7 @@ class RepoItem {
         self.deinitSignal.onNext(())
     }
     
+    // Statuc function parsing the JSON to item list.
     static func jsonToList(_ json: AnyObject?) throws -> ([RepoItem]?, Int) {
         var result = [RepoItem]()
         
@@ -81,6 +86,7 @@ class RepoItem {
         return (result, totalCount)
     }
     
+    //Static function parsing the JSON to a repo item
     static func jsonToItem(_ json: AnyObject?) throws -> RepoItem {
         guard let unwrappedJson = json as? [String: AnyObject] else { throw JSONParsingError.InvalidJSON }
         guard let repoName = unwrappedJson["name"] as? String else { throw JSONParsingError.FieldNotFound }
